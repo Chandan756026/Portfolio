@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chandan Kumar Giri — Creative Web Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: #0d1117;
+    --border: #1e2535;
+    --text: #e8eaf0;
+    --muted: #5a6478;
+    --accent: #00f5a0;
+    --accent2: #00d4ff;
+    --accent3: #ff6b35;
+    --glow: rgba(0, 245, 160, 0.15);
+    --transition-smooth: cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, background 0.2s;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.35s ease, width 0.2s, height 0.2s, opacity 0.2s;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+  }
+
+  /* grid overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(rgba(0,245,160,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,245,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ambient blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+  .blob-1 { width: 500px; height: 500px; background: rgba(0,245,160,0.07); top: -100px; right: -100px; }
+  .blob-2 { width: 400px; height: 400px; background: rgba(0,212,255,0.06); bottom: 10%; left: -80px; animation-delay: -4s; }
+  .blob-3 { width: 300px; height: 300px; background: rgba(255,107,53,0.05); top: 50%; left: 40%; animation-delay: -8s; }
+
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(30px, 40px) scale(1.1); }
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.2rem 0;
+    background: rgba(8,10,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO SECTION with zoom-in-out image */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    width: 100%;
+  }
+  .hero-left {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.9s 0.2s forwards;
+  }
+  .hero-eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+  }
+  .hero-eyebrow::before { content: '> '; opacity: 0.5; }
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+  .hero-name .accent-line {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--accent);
+  }
+  .hero-role {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--muted);
+    margin-top: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  .hero-desc {
+    font-size: 0.82rem;
+    line-height: 1.9;
+    color: var(--muted);
+    max-width: 440px;
+    border-left: 2px solid var(--border);
+    padding-left: 1.2rem;
+  }
+  .hero-cta {
+    display: flex; gap: 1rem; margin-top: 2.5rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.25s;
+    cursor: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 400;
+  }
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent), 0 0 24px var(--glow);
+  }
+  .btn-outline {
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* IMAGE ZOOM-IN/OUT + SCROLL REVEAL CARD */
+  .hero-media {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .image-frame {
+    width: 100%;
+    max-width: 380px;
+    border-radius: 32px;
+    background: linear-gradient(145deg, var(--surface), #0a0f16);
+    padding: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 30px 40px -20px rgba(0,0,0,0.6);
+    transition: transform 0.3s ease;
+  }
+  .profile-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 24px;
+    display: block;
+    transition: transform 0.8s var(--transition-smooth), filter 0.4s;
+    filter: grayscale(0.1) contrast(1.05);
+    will-change: transform;
+  }
+  /* zoom animation class toggled by scroll */
+  .zoom-pulse {
+    animation: gentleZoom 1.2s var(--transition-smooth) forwards;
+  }
+  @keyframes gentleZoom {
+    0% { transform: scale(1); filter: grayscale(0.1) brightness(1); }
+    50% { transform: scale(1.08); filter: grayscale(0) brightness(1.08); box-shadow: 0 0 0 4px rgba(0,245,160,0.3); }
+    100% { transform: scale(1); filter: grayscale(0.1) brightness(1); }
+  }
+
+  /* terminal block */
+  .hero-terminal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+  .terminal-bar {
+    background: #111827;
+    padding: 0.75rem 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .terminal-title { font-size: 0.68rem; color: var(--muted); margin-left: auto; letter-spacing: 0.1em; }
+  .terminal-body { padding: 1.5rem; font-size: 0.78rem; line-height: 2; }
+  .t-comment { color: #3d4f6e; }
+  .t-key { color: var(--accent2); }
+  .t-val { color: var(--accent); }
+  .t-str { color: #f9c74f; }
+  .t-brace { color: var(--muted); }
+  .t-cursor-blink {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--accent);
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* sections common */
+  section { padding: 6rem 0; }
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .section-label::before { content: '// '; opacity: 0.5; }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 3rem;
+  }
+
+  /* skills */
+  #skills { border-top: 1px solid var(--border); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .skill-card {
+    background: var(--surface);
+    padding: 2rem;
+    transition: background 0.3s;
+  }
+  .skill-card:hover { background: #0f1620; }
+  .skill-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+  .skill-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .skill-tech { font-size: 0.68rem; color: var(--muted); line-height: 1.8; }
+  .skill-bar-wrap {
+    margin-top: 1rem;
+    background: var(--border);
+    height: 2px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .skill-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* projects list */
+  #projects { border-top: 1px solid var(--border); }
+  .projects-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .project-item {
+    background: var(--surface);
+    padding: 2rem 2.5rem;
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    transition: background 0.2s;
+    text-decoration: none;
+    color: inherit;
+    cursor: none;
+  }
+  .project-item:hover { background: #0d1520; }
+  .project-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--border);
+    line-height: 1;
+  }
+  .project-item:hover .project-num { color: var(--accent); }
+  .project-name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .project-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.7; }
+  .project-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem; }
+  .tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+  }
+  .project-arrow { font-size: 1.2rem; color: var(--border); transition: color 0.2s, transform 0.2s; }
+  .project-item:hover .project-arrow { color: var(--accent); transform: translate(3px, -3px); }
+
+  /* about + stats */
+  #about { border-top: 1px solid var(--border); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .about-text p {
+    font-size: 0.82rem;
+    line-height: 2;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+  .about-text p strong { color: var(--text); font-weight: 400; }
+  .about-text p .highlight { color: var(--accent); }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .stat-card { background: var(--surface); padding: 1.5rem; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.3rem; }
+
+  /* contact */
+  #contact { border-top: 1px solid var(--border); }
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .contact-lead {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    line-height: 1.3;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+  .contact-lead em { font-style: italic; color: var(--accent); }
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .contact-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 1.5rem;
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.78rem;
+    border-bottom: 1px solid var(--border);
+    transition: all 0.2s;
+    cursor: none;
+  }
+  .contact-link:last-child { border-bottom: none; }
+  .contact-link:hover { background: #0d1520; color: var(--accent); }
+  .contact-link-label { letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.65rem; color: var(--muted); }
+  .contact-link-val { color: var(--text); font-size: 0.82rem; transition: color 0.2s; }
+  .contact-link:hover .contact-link-val { color: var(--accent); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+  }
+  .footer-inner {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+  .footer-made { font-size: 0.65rem; color: var(--muted); }
+  .footer-made span { color: var(--accent); }
+
+  /* scroll reveal animation (content one by one) */
+  .reveal-item {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.1), transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  }
+  .reveal-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* delays for cascade effect inside sections */
+  .skill-card.reveal-item { transition-delay: 0.05s; }
+  .project-item.reveal-item { transition-delay: 0.08s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .hero-grid, .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .project-item { grid-template-columns: 40px 1fr; }
+    .project-arrow { display: none; }
+    .nav-links { display: none; }
+    .hero-terminal { margin-top: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="#hero" class="nav-logo">CKG</a>
+    <ul class="nav-links">
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero section with image zoom & reveal -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <p class="hero-eyebrow">Available for work</p>
+        <h1 class="hero-name">
+          Chandan<br>
+          <span class="accent-line">Kumar</span>
+          Giri
+        </h1>
+        <p class="hero-role">Creative Web Developer / UI Engineer</p>
+        <p class="hero-desc">
+          I craft immersive digital experiences where design meets engineering.
+          Specializing in interactive interfaces, motion design, and pixel-perfect
+          frontend architecture.
+        </p>
+        <div class="hero-cta">
+          <a href="#projects" class="btn btn-primary">View Projects →</a>
+          <a href="#contact" class="btn btn-outline">Get in Touch</a>
+        </div>
+      </div>
+
+      <!-- right side: image with zoom effect + scroll reveal -->
+      <div class="hero-media reveal-item" id="profileImageContainer">
+        <div class="image-frame">
+          <img class="profile-img" id="profileImg" src="my_pic.png" alt="Chandan Kumar Giri portrait">
+        </div>
+        <div class="hero-terminal" style="margin-top: 1.2rem;">
+          <div class="terminal-bar">
+            <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+            <span class="terminal-title">chandan.portfolio</span>
+          </div>
+          <div class="terminal-body">
+            <span class="t-comment">// Creative coder + design engineer</span><br>
+            <span class="t-key">const</span> <span class="t-val">passion</span> = <span class="t-str">"building digital poetry"</span>;<br>
+            <span class="t-key">const</span> <span class="t-val">tools</span> = <span class="t-brace">[</span><span class="t-str">"React"</span>, <span class="t-str">"GSAP"</span>, <span class="t-str">"Three.js"</span><span class="t-brace">]</span>;<br>
+            <span class="t-comment">// Scroll to reveal magic ✨</span><span class="t-cursor-blink"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills section -->
+<section id="skills">
+  <div class="container">
+    <div class="reveal-item">
+      <p class="section-label">What I do</p>
+      <h2 class="section-title">Skills & <br>Technologies</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card reveal-item"><div class="skill-icon">⚛️</div><div class="skill-name">Frontend</div><div class="skill-tech">React · Next.js · Vue · TypeScript · HTML5 · CSS</div><div class="skill-bar-wrap"><div class="skill-bar" data-width="92"></div></div></div>
+      <div class="skill-card reveal-item"><div class="skill-icon">🎨</div><div class="skill-name">UI / Design</div><div class="skill-tech">Figma · Tailwind · Framer Motion · GSAP · Three.js</div><div class="skill-bar-wrap"><div class="skill-bar" data-width="88"></div></div></div>
+      <div class="skill-card reveal-item"><div class="skill-icon">🔧</div><div class="skill-name">Backend</div><div class="skill-tech">Node.js · Express · MongoDB · PostgreSQL · REST API</div><div class="skill-bar-wrap"><div class="skill-bar" data-width="75"></div></div></div>
+      <div class="skill-card reveal-item"><div class="skill-icon">🚀</div><div class="skill-name">DevOps</div><div class="skill-tech">Git · GitHub · Vercel · Netlify · Docker · CI/CD</div><div class="skill-bar-wrap"><div class="skill-bar" data-width="70"></div></div></div>
+      <div class="skill-card reveal-item"><div class="skill-icon">✨</div><div class="skill-name">Creative</div><div class="skill-tech">WebGL · Canvas API · SVG Animation · Lottie · Spline</div><div class="skill-bar-wrap"><div class="skill-bar" data-width="82"></div></div></div>
+      <div class="skill-card reveal-item"><div class="skill-icon">📱</div><div class="skill-name">Mobile</div><div class="skill-tech">React Native · PWA · Responsive Design · Web Vitals</div><div class="skill-bar-wrap"><div class="skill-bar" data-width="68"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Projects section one-by-one -->
+<section id="projects">
+  <div class="container">
+    <div class="reveal-item">
+      <p class="section-label">Featured Work</p>
+      <h2 class="section-title">Selected<br>Projects</h2>
+    </div>
+    <div class="projects-list">
+      <a href="#" class="project-item reveal-item"><div class="project-num">01</div><div><div class="project-name">Lumina Design System</div><div class="project-desc">A full-featured component library with 60+ accessible, animated components built in React + TypeScript.</div><div class="project-tags"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Storybook</span></div></div><div class="project-arrow">↗</div></a>
+      <a href="#" class="project-item reveal-item"><div class="project-num">02</div><div><div class="project-name">Orbital — 3D Portfolio</div><div class="project-desc">An immersive portfolio experience using Three.js and WebGL with fluid camera transitions.</div><div class="project-tags"><span class="tag">Three.js</span><span class="tag">WebGL</span><span class="tag">GSAP</span></div></div><div class="project-arrow">↗</div></a>
+      <a href="#" class="project-item reveal-item"><div class="project-num">03</div><div><div class="project-name">FlowBoard — SaaS Dashboard</div><div class="project-desc">Real-time analytics dashboard with drag-and-drop widgets, live data charts, and role-based access.</div><div class="project-tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">Socket.io</span></div></div><div class="project-arrow">↗</div></a>
+      <a href="#" class="project-item reveal-item"><div class="project-num">04</div><div><div class="project-name">Inkscroll — Blog Platform</div><div class="project-desc">Minimal, fast blog platform with MDX support, full-text search, and 100/100 Lighthouse score.</div><div class="project-tags"><span class="tag">Next.js</span><span class="tag">MDX</span><span class="tag">Tailwind</span></div></div><div class="project-arrow">↗</div></a>
+    </div>
+  </div>
+</section>
+
+<!-- About + stats -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="reveal-item"><p class="section-label">The Human</p><h2 class="section-title">About<br>Me</h2><div class="about-text"><p>Hey! I'm <strong>Chandan Kumar Giri</strong> — a creative web developer based in <span class="highlight"> Odisha, India</span>. I'm passionate about building things that live on the internet and actually feel <em>alive</em>.</p><p>My approach sits at the intersection of <strong>design and engineering</strong>. I believe great products are built when code quality meets design thinking — every pixel and every function matters.</p><p>When I'm not pushing commits, I'm exploring <span class="highlight">creative coding</span>, contributing to open source, or sketching interface ideas.</p></div></div>
+      <div class="reveal-item"><div class="stats-grid"><div class="stat-card"><div class="stat-num">1+</div><div class="stat-label">Years Experience</div></div><div class="stat-card"><div class="stat-num">15+</div><div class="stat-label">Projects Built</div></div><div class="stat-card"><div class="stat-num">10+</div><div class="stat-label">Technologies</div></div><div class="stat-card"><div class="stat-num">∞</div><div class="stat-label">Cups of Coffee</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="reveal-item"><p class="section-label">Let's connect</p><h2 class="section-title">Get In<br>Touch</h2><p class="contact-lead">Have a project in mind?<br>Let's build something <em>extraordinary</em> together.</p><a href="mailto:chandangiri30968@email.com" class="btn btn-primary">Send a Message →</a></div>
+      <div class="contact-links reveal-item"><a href="https://github.com/Chandan756026" class="contact-link"><div><div class="contact-link-label">GitHub</div><div class="contact-link-val">https://github.com/Chandan756026</div></div><span>↗</span></a><a href="https://linkedin.com/in/chandankumargiri" class="contact-link"><div><div class="contact-link-label">LinkedIn</div><div class="contact-link-val">linkedin.com/in/chandankumargiri</div></div><span>↗</span></a><a href="https://twitter.com/chandankgiri" class="contact-link"><div><div class="contact-link-label">Twitter</div><div class="contact-link-val">@chandankgiri</div></div><span>↗</span></a><a href="mailto:chandangiri30968@email.com" class="contact-link"><div><div class="contact-link-label">Email</div><div class="contact-link-val">chandangiri30968@email.com</div></div><span>↗</span></a></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner"><p class="footer-copy">© 2026 Chandan Kumar Giri. All rights reserved.</p><p class="footer-made">Designed & built with <span>♥</span> in odisha</p></div>
+</footer>
+
+<script>
+  // Custom cursor smooth follow
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+  function animateRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animateRing); }
+  animateRing();
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2)'; ring.style.width = '54px'; ring.style.height = '54px'; ring.style.opacity = '0.3'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '0.5'; });
+  });
+
+  // SCROLL REVEAL one-by-one content + image zoom on scroll
+  const revealItems = document.querySelectorAll('.reveal-item');
+  const profileImg = document.getElementById('profileImg');
+  let zoomTimeout = null;
+
+  const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Skill bars activation inside visible skill cards
+        if (entry.target.querySelectorAll) {
+          entry.target.querySelectorAll('.skill-bar').forEach(bar => {
+            if (bar.dataset.width) bar.style.width = bar.dataset.width + '%';
+          });
+        }
+        // special: if it's the hero image container, trigger zoom in/out effect on picture
+        if (entry.target.id === 'profileImageContainer' || entry.target.querySelector('.profile-img')) {
+          if (zoomTimeout) clearTimeout(zoomTimeout);
+          profileImg.classList.remove('zoom-pulse');
+          void profileImg.offsetWidth; // force reflow
+          profileImg.classList.add('zoom-pulse');
+          zoomTimeout = setTimeout(() => { profileImg.classList.remove('zoom-pulse'); }, 1300);
+        }
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '0px 0px -50px 0px' });
+
+  revealItems.forEach(el => scrollObserver.observe(el));
+  // also observe the specific image container directly if needed
+  const imgContainer = document.getElementById('profileImageContainer');
+  if(imgContainer) scrollObserver.observe(imgContainer);
+  
+  // additional: ensure first load triggers hero image zoom if visible
+  setTimeout(() => {
+    const heroImgCheck = document.getElementById('profileImageContainer');
+    if(heroImgCheck && heroImgCheck.getBoundingClientRect().top < window.innerHeight - 100) {
+      profileImg.classList.add('zoom-pulse');
+      setTimeout(() => profileImg.classList.remove('zoom-pulse'), 1300);
+    }
+    // manually trigger skill bars on any already visible skill cards after load
+    document.querySelectorAll('.skill-card.reveal-item').forEach(card => {
+      if(card.getBoundingClientRect().top < window.innerHeight - 80) {
+        card.querySelectorAll('.skill-bar').forEach(bar => { if(bar.dataset.width) bar.style.width = bar.dataset.width + '%'; });
+      }
+    });
+  }, 300);
+
+  // active nav highlight
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const navObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        navLinks.forEach(a => a.style.color = '');
+        const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if(active) active.style.color = 'var(--accent)';
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px' });
+  sections.forEach(s => navObs.observe(s));
+</script>
+</body>
+</html>
